@@ -1,11 +1,148 @@
 ---
-title: "HDS_DataIntegration"
+title: "Module 6. Multi-modal data integration and analysis"
+
 ---
 
-This is a Quarto website.
+# Introduction
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+We are now going to explore different data sets. 
+
+\# Data
+
+We'll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA's BRCA data). The data was previously formatted and preprocessed by Sierra Niemec (https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format. 
+
+brca_dat <- list("clinical" = dataClin,
+                "MO" = list("Expression" = exp_matched,
+                "Methylation" = methyl_matched,
+                "miRNA" = miRna_matched)
+                )
+
+It's essentially a list with a dataframe for clinical data under "clinical", and then a list ("MO") of the 3 omics types ("Expression" for mRNA expression, "Methylation" for DNA methylation, and "miRNA" for the microRNA expression).
+
+\*\***NOTE: As seen in teh coursem we are performing vertical integration do it is very important that all data is matched by sample!**\*\*
+
+The data were originally referenced in this article: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273
+
+The following arrays were used:
+
+\* mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays
+
+\* Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)
+
+The microRNA was sequenced.
+
+\## Pre-processing Steps
+
+The following pre-processing steps were performed, as detailed by: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3789539/#sec-10title
+
+RNA Expression:
+
+\* Missing mRNA expression values were imputed with k-nearest-neighbors
+
+\* Select the most variable genes: those with a standard deviation \> 1.5
+
+miRNA Expression:
+
+\* miRNAs with more than 50% missing values were removed
+
+\* log-transform the data (log(1 + miRNA))
+
+We have a total of 343 subjects, 645 mRNA transcripts, 574 CpG sites (methylation), 423 miRNA transcripts.
+
+\# Goal
+
+Our goal with this analysis is to start familiarizing ourselved with different sources of data  
+
 
 ```{r}
-1 + 1
+
+#install.packages("Rfssa") #if you want to download through github
+#
+#library(Rfssa)
+#
+#url <- "https://github.com/KechrisLab/ASAShortCourse-MultiOmics/blob/main/Lecture%202/brca_dat.Rdata"
+#
+#load_github_data(url)
+
+load("brca_dat.Rdata")
+
+
+```
+
+
+let's get a quick look at our data
+
+```{r}
+names(brca_dat)
+
+paste("dim of clinical data:", dim(brca_dat[["clinical"]]))
+
+head(brca_dat[["clinical"]])
+```
+
+check sample names all match
+
+```{r}
+# check sample names all match
+
+identical(brca_dat[["clinical"]]$bcr_patient_barcode, colnames(brca_dat[["MO"]][["Expression"]]))
+
+identical(brca_dat[["clinical"]]$bcr_patient_barcode, colnames(brca_dat[["MO"]][["Methylation"]]))
+
+identical(brca_dat[["clinical"]]$bcr_patient_barcode, colnames(brca_dat[["MO"]][["miRNA"]]))
+```
+
+
+```{r}
+identical(colnames(brca_dat[["MO"]][["Expression"]]), colnames(brca_dat[["MO"]][["Methylation"]]))
+
+identical(colnames(brca_dat[["MO"]][["Expression"]]), colnames(brca_dat[["MO"]][["miRNA"]]))
+
+identical(colnames(brca_dat[["MO"]][["Methylation"]]), colnames(brca_dat[["MO"]][["miRNA"]]))
+```
+
+
+Let's make sure there are no missing values:
+
+
+```{r}
+# data checking \-- are there any missing values?
+
+sum(is.na(brca_dat[["MO"]][["Expression"]]))
+
+sum(is.na(brca_dat[["MO"]][["Methylation"]]))
+
+sum(is.na(brca_dat[["MO"]][["miRNA"]]))
+```
+
+
+Let's also have a quick look at the distributions:
+
+Transcriptomics
+
+```{r}
+range(brca_dat[["MO"]][["Expression"]])
+
+plot(density(brca_dat[["MO"]][["Expression"]]), main = "Expression")
+```
+
+Methylation
+
+```{r}
+
+range(brca_dat[["MO"]][["Methylation"]])
+
+plot(density(brca_dat[["MO"]][["Methylation"]]), main = "Methylation")
+
+```
+
+miRNA
+
+
+```{r}
+
+range(brca_dat[["MO"]][["miRNA"]])
+
+plot(density(brca_dat[["MO"]][["miRNA"]]), main = "miRNA")
+
 ```

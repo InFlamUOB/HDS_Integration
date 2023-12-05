@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>HDS_DataIntegration</title>
+<title>HDS_DataIntegration - Module 6. Multi-modal data integration and analysis</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -130,18 +130,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content column-page-left" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">HDS_DataIntegration</h1>
+<h1 class="title">Module 6. Multi-modal data integration and analysis</h1>
 </div>
 
 
@@ -156,16 +162,168 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<p>This is a Quarto website.</p>
-<p>To learn more about Quarto websites visit <a href="https://quarto.org/docs/websites" class="uri">https://quarto.org/docs/websites</a>.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>We are now going to explore different data sets.</p>
+<p># Data</p>
+<p>We’ll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA’s BRCA data). The data was previously formatted and preprocessed by Sierra Niemec (https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format.</p>
+<p>brca_dat &lt;- list(“clinical” = dataClin, “MO” = list(“Expression” = exp_matched, “Methylation” = methyl_matched, “miRNA” = miRna_matched) )</p>
+<p>It’s essentially a list with a dataframe for clinical data under “clinical”, and then a list (“MO”) of the 3 omics types (“Expression” for mRNA expression, “Methylation” for DNA methylation, and “miRNA” for the microRNA expression).</p>
+<p>**<strong>NOTE: As seen in teh coursem we are performing vertical integration do it is very important that all data is matched by sample!</strong>**</p>
+<p>The data were originally referenced in this article: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273</p>
+<p>The following arrays were used:</p>
+<p>* mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays</p>
+<p>* Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)</p>
+<p>The microRNA was sequenced.</p>
+<p>## Pre-processing Steps</p>
+<p>The following pre-processing steps were performed, as detailed by: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3789539/#sec-10title</p>
+<p>RNA Expression:</p>
+<p>* Missing mRNA expression values were imputed with k-nearest-neighbors</p>
+<p>* Select the most variable genes: those with a standard deviation &gt; 1.5</p>
+<p>miRNA Expression:</p>
+<p>* miRNAs with more than 50% missing values were removed</p>
+<p>* log-transform the data (log(1 + miRNA))</p>
+<p>We have a total of 343 subjects, 645 mRNA transcripts, 574 CpG sites (methylation), 423 miRNA transcripts.</p>
+<p># Goal</p>
+<p>Our goal with this analysis is to start familiarizing ourselved with different sources of data</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("Rfssa") #if you want to download through github</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#library(Rfssa)</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co">#url &lt;- "https://github.com/KechrisLab/ASAShortCourse-MultiOmics/blob/main/Lecture%202/brca_dat.Rdata"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">#load_github_data(url)</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"brca_dat.Rdata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>let’s get a quick look at our data</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(brca_dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
+<pre><code>[1] "clinical" "MO"      </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">paste</span>(<span class="st">"dim of clinical data:"</span>, <span class="fu">dim</span>(brca_dat[[<span class="st">"clinical"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "dim of clinical data: 343" "dim of clinical data: 14" </code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(brca_dat[[<span class="st">"clinical"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>             bcr_patient_barcode age_at_diagnosis ajcc_pathologic_stage
+TCGA-A1-A0SH        TCGA-A1-A0SH            14595             Stage IIA
+TCGA-A1-A0SJ        TCGA-A1-A0SJ            14383            Stage IIIA
+TCGA-A1-A0SK        TCGA-A1-A0SK            20048             Stage IIA
+TCGA-A1-A0SO        TCGA-A1-A0SO            24826             Stage IIB
+TCGA-A2-A04N        TCGA-A2-A04N            24155              Stage IA
+TCGA-A2-A04P        TCGA-A2-A04P            13238            Stage IIIC
+             ajcc_pathologic_t ajcc_pathologic_n ajcc_pathologic_m vital_status
+TCGA-A1-A0SH                T2           N0 (i-)                M0        Alive
+TCGA-A1-A0SJ                T3               N1a                M0        Alive
+TCGA-A1-A0SK                T2           N0 (i-)                M0         Dead
+TCGA-A1-A0SO                T2                N1                M0        Alive
+TCGA-A2-A04N               T1c           N0 (i-)                M0        Alive
+TCGA-A2-A04P                T2               N3c                M0         Dead
+             days_to_death days_to_last_followup pathologic_stage
+TCGA-A1-A0SH            NA                  1437         Stage_II
+TCGA-A1-A0SJ            NA                   416        Stage_III
+TCGA-A1-A0SK           967                    NA         Stage_II
+TCGA-A1-A0SO            NA                   852         Stage_II
+TCGA-A2-A04N            NA                  4354          Stage_I
+TCGA-A2-A04P           548                    NA        Stage_III
+             BRCA_Pathology BRCA_Subtype_PAM50 fustat futime
+TCGA-A1-A0SH          Mixed               LumA      0   1437
+TCGA-A1-A0SJ            IDC               LumA      0    416
+TCGA-A1-A0SK          Other              Basal      1    967
+TCGA-A1-A0SO             NA              Basal      0    852
+TCGA-A2-A04N          Other               LumA      0   4354
+TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
+</div>
+</div>
+<p>check sample names all match</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check sample names all match</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(brca_dat[[<span class="st">"clinical"</span>]]<span class="sc">$</span>bcr_patient_barcode, <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(brca_dat[[<span class="st">"clinical"</span>]]<span class="sc">$</span>bcr_patient_barcode, <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(brca_dat[[<span class="st">"clinical"</span>]]<span class="sc">$</span>bcr_patient_barcode, <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]), <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]), <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">identical</span>(<span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]]), <span class="fu">colnames</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] TRUE</code></pre>
+</div>
+</div>
+<p>Let’s make sure there are no missing values:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data checking \-- are there any missing values?</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Let’s also have a quick look at the distributions:</p>
+<p>Transcriptomics</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] -10.16825  12.16313</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]), <span class="at">main =</span> <span class="st">"Expression"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Methylation</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.08450738 0.99379288</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]]), <span class="at">main =</span> <span class="st">"Methylation"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>miRNA</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  0.00000 13.32126</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">density</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]]), <span class="at">main =</span> <span class="st">"miRNA"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
