@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Multi-modal data integration and analysis - Multi-modal data</title>
+<title>Multi-modal data integration and analysis - Data integration</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -120,7 +120,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./about.html" rel="" target="">
- <span class="menu-text">Bluebear</span></a>
+ <span class="menu-text">Extra</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -138,15 +138,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#data-integration" id="toc-data-integration" class="nav-link active" data-scroll-target="#data-integration">Data integration</a>
-  <ul class="collapse">
-  <li><a href="#loading" id="toc-loading" class="nav-link" data-scroll-target="#loading">Loading</a></li>
+  <li><a href="#loading" id="toc-loading" class="nav-link active" data-scroll-target="#loading">Loading</a></li>
   <li><a href="#understanding" id="toc-understanding" class="nav-link" data-scroll-target="#understanding">Understanding</a>
   <ul class="collapse">
   <li><a href="#transcriptomics" id="toc-transcriptomics" class="nav-link" data-scroll-target="#transcriptomics">Transcriptomics</a></li>
   <li><a href="#methylation" id="toc-methylation" class="nav-link" data-scroll-target="#methylation">Methylation</a></li>
   <li><a href="#mirna" id="toc-mirna" class="nav-link" data-scroll-target="#mirna">miRNA</a></li>
-  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -156,7 +153,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Multi-modal data</h1>
+<h1 class="title">Data integration</h1>
 </div>
 
 
@@ -171,8 +168,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="data-integration" class="level1">
-<h1>Data integration</h1>
 <p>We’ll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA’s BRCA data)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. The data was previously formatted and pre-processed by Sierra Niemec <a href="https://github.com/KechrisLab/ASAShortCourse-MultiOmics">ASAShortCourse-MultiOmics</a> using the following format:</p>
 <p><code>brca_dat &lt;- list("clinical" = dataClin, "MO" = list("Expression" = exp_matched, "Methylation" = methyl_matched, "miRNA" = miRna_matched) )</code></p>
 <p>It’s essentially a list with a dataframe for clinical data under “clinical”, and then a list (“MO”) of the 3 omics types (“Expression” for mRNA expression, “Methylation” for DNA methylation, and “miRNA” for the microRNA expression)*.</p>
@@ -322,9 +317,9 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Try and understand the difference between each and try and plot them all together.</p>
 
 
-</section>
 </section>
 </section>
 

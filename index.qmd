@@ -1,8 +1,6 @@
 ---
-title: "Multi-modal data"
+title: "Data integration"
 ---
-
-# Data integration
 
 We'll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA's BRCA data)[^1]. The data was previously formatted and pre-processed by Sierra Niemec [ASAShortCourse-MultiOmics](https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format:
 
@@ -114,3 +112,5 @@ range(brca_dat[["MO"]][["miRNA"]])
 plot(density(brca_dat[["MO"]][["miRNA"]]), main = "miRNA")
 
 ```
+
+Try and understand the difference between each and try and plot them all together.
