@@ -2,7 +2,7 @@
 title: "Extra"
 ---
 
-## Loading Bluebear (High Computing Cluster at University of Birmingham)
+### Loading Bluebear (High Computing Cluster at University of Birmingham)
 
 In this module, we will be using the R software environment for all our analysis.
 
@@ -11,13 +11,13 @@ In this module, we will be using the R software environment for all our analysis
 -   [More information](https://www.birmingham.ac.uk/research/arc/bear/bluebear/index.aspx?_ga=2.238363458.312892326.1701768679-300651445.1701639675)
 
 
-## Background reading 
+### Background reading 
 
 -   [Milan Picard et al. 2021](https://www.sciencedirect.com/science/article/pii/S2001037021002683)
 -   [Marina Zitnik et al. 2019](https://www.sciencedirect.com/science/article/pii/S1566253518304482)
 -   [Mohan Babu et al. 2023](https://pubmed.ncbi.nlm.nih.gov/37119971/)
 -   [Marylyn D. Ritchie et al. 2015](https://www.nature.com/articles/nrg3868)
 
-## Other resources
+### Other resources
 
 -    [Multi-modal integration analysis methods](https://github.com/mikelove/awesome-multi-omics)
