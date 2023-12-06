@@ -12,7 +12,7 @@ website:
       - href: index.qmd
         text: Session 1
       - file: about.qmd
-        text: Bluebear
+        text: Extra
       
 
 format:
