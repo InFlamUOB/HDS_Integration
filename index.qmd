@@ -1,58 +1,30 @@
 ---
-title: "Module 6. Multi-modal data integration and analysis"
-
+title: "Multi-modal data"
 ---
 
-# Introduction
+# Data integration
 
-We are now going to explore different data sets. 
+We'll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA's BRCA data)[^1]. The data was previously formatted and pre-processed by Sierra Niemec [ASAShortCourse-MultiOmics](https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format:
 
-\# Data
+[^1]: The data was orginally referenced in this [article](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273) and the following arrays were used:
 
-We'll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA's BRCA data). The data was previously formatted and preprocessed by Sierra Niemec (https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format. 
+    -   mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays
 
-brca_dat <- list("clinical" = dataClin,
-                "MO" = list("Expression" = exp_matched,
-                "Methylation" = methyl_matched,
-                "miRNA" = miRna_matched)
-                )
+    -   Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)
 
-It's essentially a list with a dataframe for clinical data under "clinical", and then a list ("MO") of the 3 omics types ("Expression" for mRNA expression, "Methylation" for DNA methylation, and "miRNA" for the microRNA expression).
+    The microRNA was sequenced.
 
-\*\***NOTE: As seen in teh coursem we are performing vertical integration do it is very important that all data is matched by sample!**\*\*
+`brca_dat <- list("clinical" = dataClin, "MO" = list("Expression" = exp_matched, "Methylation" = methyl_matched, "miRNA" = miRna_matched) )`
 
-The data were originally referenced in this article: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273
+It's essentially a list with a dataframe for clinical data under "clinical", and then a list ("MO") of the 3 omics types ("Expression" for mRNA expression, "Methylation" for DNA methylation, and "miRNA" for the microRNA expression)\*.
 
-The following arrays were used:
-
-\* mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays
-
-\* Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)
-
-The microRNA was sequenced.
-
-\## Pre-processing Steps
-
-The following pre-processing steps were performed, as detailed by: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3789539/#sec-10title
-
-RNA Expression:
-
-\* Missing mRNA expression values were imputed with k-nearest-neighbors
-
-\* Select the most variable genes: those with a standard deviation \> 1.5
-
-miRNA Expression:
-
-\* miRNAs with more than 50% missing values were removed
-
-\* log-transform the data (log(1 + miRNA))
+\*\***NOTE: As seen in the lecture, we are performing vertical integration so it is very important that all data is matched by sample!**\*\*
 
 We have a total of 343 subjects, 645 mRNA transcripts, 574 CpG sites (methylation), 423 miRNA transcripts.
 
-\# Goal
+## Loading
 
-Our goal with this analysis is to start familiarizing ourselved with different sources of data  
-
+Our goal with this analysis is to start familiarizing ourselves with different sources of data
 
 ```{r}
 
@@ -69,8 +41,9 @@ load("brca_dat.Rdata")
 
 ```
 
+## Understanding
 
-let's get a quick look at our data
+Let's get a quick look at our data
 
 ```{r}
 names(brca_dat)
@@ -80,7 +53,7 @@ paste("dim of clinical data:", dim(brca_dat[["clinical"]]))
 head(brca_dat[["clinical"]])
 ```
 
-check sample names all match
+Check sample names all match
 
 ```{r}
 # check sample names all match
@@ -92,8 +65,8 @@ identical(brca_dat[["clinical"]]$bcr_patient_barcode, colnames(brca_dat[["MO"]][
 identical(brca_dat[["clinical"]]$bcr_patient_barcode, colnames(brca_dat[["MO"]][["miRNA"]]))
 ```
 
-
 ```{r}
+
 identical(colnames(brca_dat[["MO"]][["Expression"]]), colnames(brca_dat[["MO"]][["Methylation"]]))
 
 identical(colnames(brca_dat[["MO"]][["Expression"]]), colnames(brca_dat[["MO"]][["miRNA"]]))
@@ -101,12 +74,9 @@ identical(colnames(brca_dat[["MO"]][["Expression"]]), colnames(brca_dat[["MO"]][
 identical(colnames(brca_dat[["MO"]][["Methylation"]]), colnames(brca_dat[["MO"]][["miRNA"]]))
 ```
 
-
 Let's make sure there are no missing values:
 
-
 ```{r}
-# data checking \-- are there any missing values?
 
 sum(is.na(brca_dat[["MO"]][["Expression"]]))
 
@@ -115,10 +85,9 @@ sum(is.na(brca_dat[["MO"]][["Methylation"]]))
 sum(is.na(brca_dat[["MO"]][["miRNA"]]))
 ```
 
-
 Let's also have a quick look at the distributions:
 
-Transcriptomics
+### Transcriptomics
 
 ```{r}
 range(brca_dat[["MO"]][["Expression"]])
@@ -126,7 +95,7 @@ range(brca_dat[["MO"]][["Expression"]])
 plot(density(brca_dat[["MO"]][["Expression"]]), main = "Expression")
 ```
 
-Methylation
+### Methylation
 
 ```{r}
 
@@ -136,8 +105,7 @@ plot(density(brca_dat[["MO"]][["Methylation"]]), main = "Methylation")
 
 ```
 
-miRNA
-
+### miRNA
 
 ```{r}
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>HDS_DataIntegration - Module 6. Multi-modal data integration and analysis</title>
+<title>Multi-modal data integration and analysis - Multi-modal data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -105,7 +105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
     <a class="navbar-brand" href="./index.html">
-    <span class="navbar-title">HDS_DataIntegration</span>
+    <span class="navbar-title">Multi-modal data integration and analysis</span>
     </a>
   </div>
             <div id="quarto-search" class="" title="Search"></div>
@@ -116,11 +116,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
     <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
- <span class="menu-text">Home</span></a>
+ <span class="menu-text">Session 1</span></a>
   </li>  
   <li class="nav-item">
     <a class="nav-link" href="./about.html" rel="" target="">
- <span class="menu-text">About</span></a>
+ <span class="menu-text">Bluebear</span></a>
   </li>  
 </ul>
             <div class="quarto-navbar-tools ms-auto">
@@ -138,7 +138,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#data-integration" id="toc-data-integration" class="nav-link active" data-scroll-target="#data-integration">Data integration</a>
+  <ul class="collapse">
+  <li><a href="#loading" id="toc-loading" class="nav-link" data-scroll-target="#loading">Loading</a></li>
+  <li><a href="#understanding" id="toc-understanding" class="nav-link" data-scroll-target="#understanding">Understanding</a>
+  <ul class="collapse">
+  <li><a href="#transcriptomics" id="toc-transcriptomics" class="nav-link" data-scroll-target="#transcriptomics">Transcriptomics</a></li>
+  <li><a href="#methylation" id="toc-methylation" class="nav-link" data-scroll-target="#methylation">Methylation</a></li>
+  <li><a href="#mirna" id="toc-mirna" class="nav-link" data-scroll-target="#mirna">miRNA</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -147,7 +156,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Module 6. Multi-modal data integration and analysis</h1>
+<h1 class="title">Multi-modal data</h1>
 </div>
 
 
@@ -162,30 +171,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="introduction" class="level1">
-<h1>Introduction</h1>
-<p>We are now going to explore different data sets.</p>
-<p># Data</p>
-<p>We’ll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA’s BRCA data). The data was previously formatted and preprocessed by Sierra Niemec (https://github.com/KechrisLab/ASAShortCourse-MultiOmics) using the following format.</p>
-<p>brca_dat &lt;- list(“clinical” = dataClin, “MO” = list(“Expression” = exp_matched, “Methylation” = methyl_matched, “miRNA” = miRna_matched) )</p>
-<p>It’s essentially a list with a dataframe for clinical data under “clinical”, and then a list (“MO”) of the 3 omics types (“Expression” for mRNA expression, “Methylation” for DNA methylation, and “miRNA” for the microRNA expression).</p>
-<p>**<strong>NOTE: As seen in teh coursem we are performing vertical integration do it is very important that all data is matched by sample!</strong>**</p>
-<p>The data were originally referenced in this article: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273</p>
-<p>The following arrays were used:</p>
-<p>* mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays</p>
-<p>* Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)</p>
-<p>The microRNA was sequenced.</p>
-<p>## Pre-processing Steps</p>
-<p>The following pre-processing steps were performed, as detailed by: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3789539/#sec-10title</p>
-<p>RNA Expression:</p>
-<p>* Missing mRNA expression values were imputed with k-nearest-neighbors</p>
-<p>* Select the most variable genes: those with a standard deviation &gt; 1.5</p>
-<p>miRNA Expression:</p>
-<p>* miRNAs with more than 50% missing values were removed</p>
-<p>* log-transform the data (log(1 + miRNA))</p>
+<section id="data-integration" class="level1">
+<h1>Data integration</h1>
+<p>We’ll be using mRNA expression, microRNA (miRNA), and DNA methylation data from 343 subjects with breast cancer (from TCGA’s BRCA data)<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. The data was previously formatted and pre-processed by Sierra Niemec <a href="https://github.com/KechrisLab/ASAShortCourse-MultiOmics">ASAShortCourse-MultiOmics</a> using the following format:</p>
+<p><code>brca_dat &lt;- list("clinical" = dataClin, "MO" = list("Expression" = exp_matched, "Methylation" = methyl_matched, "miRNA" = miRna_matched) )</code></p>
+<p>It’s essentially a list with a dataframe for clinical data under “clinical”, and then a list (“MO”) of the 3 omics types (“Expression” for mRNA expression, “Methylation” for DNA methylation, and “miRNA” for the microRNA expression)*.</p>
+<p>**<strong>NOTE: As seen in the lecture, we are performing vertical integration so it is very important that all data is matched by sample!</strong>**</p>
 <p>We have a total of 343 subjects, 645 mRNA transcripts, 574 CpG sites (methylation), 423 miRNA transcripts.</p>
-<p># Goal</p>
-<p>Our goal with this analysis is to start familiarizing ourselved with different sources of data</p>
+<section id="loading" class="level2">
+<h2 class="anchored" data-anchor-id="loading">Loading</h2>
+<p>Our goal with this analysis is to start familiarizing ourselves with different sources of data</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#install.packages("Rfssa") #if you want to download through github</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
@@ -197,7 +192,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"brca_dat.Rdata"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>let’s get a quick look at our data</p>
+</section>
+<section id="understanding" class="level2">
+<h2 class="anchored" data-anchor-id="understanding">Understanding</h2>
+<p>Let’s get a quick look at our data</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(brca_dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -239,7 +237,7 @@ TCGA-A2-A04N          Other               LumA      0   4354
 TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 </div>
 </div>
-<p>check sample names all match</p>
+<p>Check sample names all match</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># check sample names all match</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -272,9 +270,7 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 </div>
 <p>Let’s make sure there are no missing values:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data checking \-- are there any missing values?</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0</code></pre>
 </div>
@@ -288,7 +284,8 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 </div>
 </div>
 <p>Let’s also have a quick look at the distributions:</p>
-<p>Transcriptomics</p>
+<section id="transcriptomics" class="level3">
+<h3 class="anchored" data-anchor-id="transcriptomics">Transcriptomics</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Expression"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -299,7 +296,9 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Methylation</p>
+</section>
+<section id="methylation" class="level3">
+<h3 class="anchored" data-anchor-id="methylation">Methylation</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"Methylation"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -310,7 +309,9 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>miRNA</p>
+</section>
+<section id="mirna" class="level3">
+<h3 class="anchored" data-anchor-id="mirna">miRNA</h3>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(brca_dat[[<span class="st">"MO"</span>]][[<span class="st">"miRNA"</span>]])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -324,8 +325,21 @@ TCGA-A2-A04P            IDC              Basal      1    548</code></pre>
 
 
 </section>
+</section>
+</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The data was orginally referenced in this <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3465532/#!po=47.7273">article</a> and the following arrays were used:</p>
+<ul>
+<li><p>mRNA Gene Expression Profiling: Agilent custom 244K whole genome microarrays</p></li>
+<li><p>Array-based DNA methylation assay: Illumina Infinium DNA methylation platforms, HumanMethylation27 (HM27) BeadChip and HumanMethylation450 (HM450) BeadChip (Illumina, San Diego, CA)</p></li>
+</ul>
+<p>The microRNA was sequenced.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

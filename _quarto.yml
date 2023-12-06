@@ -3,12 +3,17 @@ project:
   output-dir: docs
 
 website:
-  title: "HDS_DataIntegration"
+  page-navigation: true
+  title: "Multi-modal data integration and analysis"
   navbar:
+    background: primary
+    search: true
     left:
       - href: index.qmd
-        text: Home
-      - about.qmd
+        text: Session 1
+      - file: about.qmd
+        text: Bluebear
+      
 
 format:
   html:
